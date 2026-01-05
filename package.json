@@ -1,5 +1,5 @@
 {
-  "name": "@tolo/device-fingerprint",
+  "name": "@tolo-platforms/device-fingerprint",
   "version": "0.1.0",
   "description": "Lightweight device fingerprinting for Tolo platform",
   "main": "dist/index.js",
