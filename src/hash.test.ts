@@ -101,7 +101,7 @@ describe("hash", () => {
       expect(algorithm).toBe("SHA-256");
       // Check it's a typed array with the right data (jsdom has different Uint8Array class)
       expect(ArrayBuffer.isView(data)).toBe(true);
-      expect(data.length).toBe(4); // "test" is 4 bytes
+      expect((data as Uint8Array).length).toBe(4); // "test" is 4 bytes
     });
   });
 });

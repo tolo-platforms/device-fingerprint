@@ -4,6 +4,10 @@ import {
   createMockAudioContext,
   setupAudioContextUnavailable,
   type MockAudioContext,
+  type MockOscillatorNode,
+  type MockDynamicsCompressorNode,
+  type MockGainNode,
+  type MockAnalyserNode,
 } from "../__mocks__/audio";
 
 describe("collectAudioFingerprint", () => {
@@ -95,7 +99,7 @@ describe("collectAudioFingerprint", () => {
     await vi.advanceTimersByTimeAsync(500);
     await promise;
 
-    const oscillator = mockContext.createOscillator();
+    const oscillator = mockContext.createOscillator() as MockOscillatorNode;
     expect(oscillator.type).toBe("triangle");
   });
 
@@ -104,7 +108,7 @@ describe("collectAudioFingerprint", () => {
     await vi.advanceTimersByTimeAsync(500);
     await promise;
 
-    const oscillator = mockContext.createOscillator();
+    const oscillator = mockContext.createOscillator() as MockOscillatorNode;
     expect(oscillator.frequency.setValueAtTime).toHaveBeenCalledWith(10000, 0);
   });
 
@@ -113,7 +117,7 @@ describe("collectAudioFingerprint", () => {
     await vi.advanceTimersByTimeAsync(500);
     await promise;
 
-    const compressor = mockContext.createDynamicsCompressor();
+    const compressor = mockContext.createDynamicsCompressor() as MockDynamicsCompressorNode;
     expect(compressor.threshold.setValueAtTime).toHaveBeenCalledWith(-50, 0);
     expect(compressor.knee.setValueAtTime).toHaveBeenCalledWith(40, 0);
     expect(compressor.ratio.setValueAtTime).toHaveBeenCalledWith(12, 0);
@@ -126,7 +130,7 @@ describe("collectAudioFingerprint", () => {
     await vi.advanceTimersByTimeAsync(500);
     await promise;
 
-    const gain = mockContext.createGain();
+    const gain = mockContext.createGain() as MockGainNode;
     expect(gain.gain.setValueAtTime).toHaveBeenCalledWith(0, 0);
   });
 
@@ -139,7 +143,6 @@ describe("collectAudioFingerprint", () => {
   });
 
   it("uses provided timeout when less than 500ms", async () => {
-    const startTime = Date.now();
     const promise = collectAudioFingerprint(100);
     await vi.advanceTimersByTimeAsync(100);
     const result = await promise;
@@ -168,7 +171,7 @@ describe("collectAudioFingerprint", () => {
     await vi.advanceTimersByTimeAsync(500);
     await promise;
 
-    const oscillator = mockContext.createOscillator();
+    const oscillator = mockContext.createOscillator() as MockOscillatorNode;
     expect(oscillator.stop).toHaveBeenCalled();
   });
 
@@ -189,7 +192,7 @@ describe("collectAudioFingerprint", () => {
 
     expect(result).toBeDefined();
     // The hash is computed from first 30 values joined by comma
-    const analyser = mockContext.createAnalyser();
+    const analyser = mockContext.createAnalyser() as MockAnalyserNode;
     expect(analyser.getFloatFrequencyData).toHaveBeenCalled();
   });
 

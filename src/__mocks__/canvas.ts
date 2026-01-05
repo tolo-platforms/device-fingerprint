@@ -82,7 +82,7 @@ export function setupCanvasMockWithVariableWidths(
   widthMap: Record<string, number>
 ): MockCanvasElement {
   const ctx = createMockCanvas2DContext();
-  ctx.measureText = vi.fn().mockImplementation((text: string) => {
+  ctx.measureText = vi.fn().mockImplementation((_text: string) => {
     // Check if any font key matches the current font setting
     for (const [fontKey, width] of Object.entries(widthMap)) {
       if (ctx.font.includes(fontKey)) {

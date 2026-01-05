@@ -155,16 +155,19 @@ Object.defineProperty(globalThis, "crypto", {
 
 // Mock Intl.DateTimeFormat
 const originalDateTimeFormat = Intl.DateTimeFormat;
-vi.spyOn(Intl, "DateTimeFormat").mockImplementation((...args) => {
-  const instance = new originalDateTimeFormat(...args);
-  return {
-    ...instance,
-    resolvedOptions: () => ({
-      ...instance.resolvedOptions(),
-      timeZone: "America/New_York",
-    }),
-  } as Intl.DateTimeFormat;
-});
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(vi.spyOn(Intl, "DateTimeFormat") as any).mockImplementation(
+  (...args: ConstructorParameters<typeof Intl.DateTimeFormat>) => {
+    const instance = new originalDateTimeFormat(...args);
+    return {
+      ...instance,
+      resolvedOptions: () => ({
+        ...instance.resolvedOptions(),
+        timeZone: "America/New_York",
+      }),
+    } as Intl.DateTimeFormat;
+  }
+);
 
 // Mock indexedDB
 Object.defineProperty(window, "indexedDB", {

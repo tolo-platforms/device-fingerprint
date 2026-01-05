@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach, type MockInstance } from "vitest";
 import { getFingerprint, getDeviceId } from "./fingerprint";
 import { resetScreenMock, resetNavigatorMock } from "./__mocks__/browser-apis";
-import { createMockCanvas2DContext, createMockCanvas } from "./__mocks__/canvas";
+import { createMockCanvas2DContext } from "./__mocks__/canvas";
 import { createMockWebGLContext } from "./__mocks__/webgl";
 import { createMockAudioContext } from "./__mocks__/audio";
 
 describe("fingerprint", () => {
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let createElementSpy: MockInstance;
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -17,7 +17,7 @@ describe("fingerprint", () => {
     const ctx2d = createMockCanvas2DContext();
     const webglCtx = createMockWebGLContext();
 
-    createElementSpy = vi.spyOn(document, "createElement").mockImplementation((tagName: string) => {
+    createElementSpy = vi.spyOn(document, "createElement").mockImplementation(((tagName: string) => {
       if (tagName === "canvas") {
         return {
           width: 0,
@@ -31,7 +31,7 @@ describe("fingerprint", () => {
         } as unknown as HTMLCanvasElement;
       }
       return document.createElement(tagName);
-    });
+    }) as typeof document.createElement);
 
     // Setup AudioContext mock
     const mockAudioContext = createMockAudioContext();

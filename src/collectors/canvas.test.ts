@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach, type MockInstance } from "vitest";
 import { collectCanvasFingerprint } from "./canvas";
 import {
   createMockCanvas2DContext,
@@ -10,17 +10,17 @@ import {
 describe("collectCanvasFingerprint", () => {
   let mockCtx: MockCanvas2DContext;
   let mockCanvas: MockCanvasElement;
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let createElementSpy: MockInstance;
 
   beforeEach(() => {
     mockCtx = createMockCanvas2DContext();
     mockCanvas = createMockCanvas(mockCtx, { dataURL: "data:image/png;base64,testImageData" });
-    createElementSpy = vi.spyOn(document, "createElement").mockImplementation((tagName: string) => {
+    createElementSpy = vi.spyOn(document, "createElement").mockImplementation(((tagName: string) => {
       if (tagName === "canvas") {
         return mockCanvas as unknown as HTMLCanvasElement;
       }
       return document.createElement(tagName);
-    });
+    }) as typeof document.createElement);
   });
 
   afterEach(() => {

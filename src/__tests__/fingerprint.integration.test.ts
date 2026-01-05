@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach, type MockInstance } from "vitest";
 import { getFingerprint, getDeviceId } from "../index";
 import { resetScreenMock, resetNavigatorMock } from "../__mocks__/browser-apis";
 import { createMockCanvas2DContext } from "../__mocks__/canvas";
@@ -6,7 +6,7 @@ import { createMockWebGLContext } from "../__mocks__/webgl";
 import { createMockAudioContext } from "../__mocks__/audio";
 
 describe("Fingerprint Integration Tests", () => {
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let createElementSpy: MockInstance;
 
   function setupFullEnvironment() {
     resetScreenMock();
@@ -15,7 +15,7 @@ describe("Fingerprint Integration Tests", () => {
     const ctx2d = createMockCanvas2DContext();
     const webglCtx = createMockWebGLContext();
 
-    createElementSpy = vi.spyOn(document, "createElement").mockImplementation((tagName: string) => {
+    createElementSpy = vi.spyOn(document, "createElement").mockImplementation(((tagName: string) => {
       if (tagName === "canvas") {
         return {
           width: 0,
@@ -29,7 +29,7 @@ describe("Fingerprint Integration Tests", () => {
         } as unknown as HTMLCanvasElement;
       }
       return document.createElement(tagName);
-    });
+    }) as typeof document.createElement);
 
     const mockAudioContext = createMockAudioContext();
     const MockAudioContextClass = vi.fn().mockImplementation(() => mockAudioContext);
@@ -159,7 +159,7 @@ describe("Fingerprint Integration Tests", () => {
     it("handles mixed collector failures gracefully", async () => {
       // WebGL unavailable
       createElementSpy.mockRestore();
-      createElementSpy = vi.spyOn(document, "createElement").mockImplementation((tagName: string) => {
+      createElementSpy = vi.spyOn(document, "createElement").mockImplementation(((tagName: string) => {
         if (tagName === "canvas") {
           return {
             width: 0,
@@ -173,7 +173,7 @@ describe("Fingerprint Integration Tests", () => {
           } as unknown as HTMLCanvasElement;
         }
         return document.createElement(tagName);
-      });
+      }) as typeof document.createElement);
 
       const promise = getFingerprint();
       await vi.advanceTimersByTimeAsync(500);
@@ -271,7 +271,6 @@ describe("Fingerprint Integration Tests", () => {
 
   describe("Performance", () => {
     it("completes fingerprint generation within timeout", async () => {
-      const startTime = Date.now();
       const promise = getFingerprint({ timeout: 100 });
       await vi.advanceTimersByTimeAsync(100);
       const result = await promise;

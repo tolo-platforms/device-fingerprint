@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach, type MockInstance } from "vitest";
 import { collectWebGLSignals } from "./webgl";
 import {
   createMockWebGLContext,
@@ -9,7 +9,7 @@ import {
 } from "../__mocks__/webgl";
 
 describe("collectWebGLSignals", () => {
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let createElementSpy: MockInstance;
 
   beforeEach(() => {
     createElementSpy = vi.spyOn(document, "createElement");
@@ -21,7 +21,7 @@ describe("collectWebGLSignals", () => {
 
   function setupWebGLMock(options: Parameters<typeof createMockWebGLContext>[0] = {}) {
     const mockGLContext = createMockWebGLContext(options);
-    createElementSpy.mockImplementation((tagName: string) => {
+    createElementSpy.mockImplementation(((tagName: string) => {
       if (tagName === "canvas") {
         return {
           width: 0,
@@ -35,7 +35,7 @@ describe("collectWebGLSignals", () => {
         } as unknown as HTMLCanvasElement;
       }
       return document.createElement(tagName);
-    });
+    }) as typeof document.createElement);
     return mockGLContext;
   }
 
@@ -69,7 +69,7 @@ describe("collectWebGLSignals", () => {
   });
 
   it("returns nulls when WebGL unavailable", () => {
-    createElementSpy.mockImplementation((tagName: string) => {
+    createElementSpy.mockImplementation(((tagName: string) => {
       if (tagName === "canvas") {
         return {
           width: 0,
@@ -78,7 +78,7 @@ describe("collectWebGLSignals", () => {
         } as unknown as HTMLCanvasElement;
       }
       return document.createElement(tagName);
-    });
+    }) as typeof document.createElement);
 
     const result = collectWebGLSignals();
     expect(result.vendor).toBeNull();
@@ -89,7 +89,7 @@ describe("collectWebGLSignals", () => {
     let callCount = 0;
     const mockGL = createMockWebGLContext();
 
-    createElementSpy.mockImplementation((tagName: string) => {
+    createElementSpy.mockImplementation(((tagName: string) => {
       if (tagName === "canvas") {
         return {
           width: 0,
@@ -105,7 +105,7 @@ describe("collectWebGLSignals", () => {
         } as unknown as HTMLCanvasElement;
       }
       return document.createElement(tagName);
-    });
+    }) as typeof document.createElement);
 
     const result = collectWebGLSignals();
     expect(callCount).toBe(2); // webgl + experimental-webgl

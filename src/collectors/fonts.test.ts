@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach, type MockInstance } from "vitest";
 import { collectFontsFingerprint } from "./fonts";
 import { createMockCanvas2DContext, createMockCanvas } from "../__mocks__/canvas";
 
 describe("collectFontsFingerprint", () => {
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let createElementSpy: MockInstance;
 
   beforeEach(() => {
     createElementSpy = vi.spyOn(document, "createElement");
@@ -44,12 +44,12 @@ describe("collectFontsFingerprint", () => {
     });
 
     const mockCanvas = createMockCanvas(ctx);
-    createElementSpy.mockImplementation((tagName: string) => {
+    createElementSpy.mockImplementation(((tagName: string) => {
       if (tagName === "canvas") {
         return mockCanvas as unknown as HTMLCanvasElement;
       }
       return document.createElement(tagName);
-    });
+    }) as typeof document.createElement);
 
     return { ctx, mockCanvas };
   }
@@ -65,12 +65,12 @@ describe("collectFontsFingerprint", () => {
   it("returns null when canvas context unavailable", () => {
     const mockCanvas = createMockCanvas(null);
     mockCanvas.getContext = vi.fn().mockReturnValue(null);
-    createElementSpy.mockImplementation((tagName: string) => {
+    createElementSpy.mockImplementation(((tagName: string) => {
       if (tagName === "canvas") {
         return mockCanvas as unknown as HTMLCanvasElement;
       }
       return document.createElement(tagName);
-    });
+    }) as typeof document.createElement);
 
     const result = collectFontsFingerprint();
     expect(result).toBeNull();

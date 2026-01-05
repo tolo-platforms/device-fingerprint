@@ -18,10 +18,11 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "lint": "eslint src/",
+    "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepare": "husky"
   },
   "keywords": [
     "fingerprint",
@@ -33,9 +34,13 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.51.0",
+    "@typescript-eslint/parser": "^8.51.0",
     "@vitest/coverage-v8": "^1.1.0",
     "eslint": "^8.55.0",
+    "husky": "^9.1.7",
     "jsdom": "^23.0.1",
+    "lint-staged": "^16.2.7",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3",
     "vitest": "^1.1.0"
@@ -47,5 +52,11 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/tolo-platforms/device-fingerprint.git"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix",
+      "vitest related --run"
+    ]
   }
 }
